@@ -79,7 +79,7 @@ def write_g09ins(g09_jobs, molname, extension, path):
         print('No directory created, g09_input already exists.')
     
     for i, job in enumerate(g09_jobs):
-        filename = molname + str(i) + extension
+        filename = molname + '_' + str(i+1) + extension
         job.write_input(os.path.join(path, 'g09_inputs', filename))
 
 
@@ -92,7 +92,7 @@ def write_confSearch(mol_list, molname, path):
     with open(os.path.join(path, molname+'.csv'), 'w') as f:
         f.write('conformer, energy, found \n')
         for i, molecule in enumerate(mol_list):
-            f.write(f'conf {i}, {molecule.energy}, {molecule.found} \n')
+            f.write(f'conf {i+1}, {molecule.energy}, {molecule.found} \n')
     
     
 
