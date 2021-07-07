@@ -73,7 +73,10 @@ def write_g09ins(g09_jobs, molname, extension, path):
     path: string, folder to work in. default: '.' (working directory).
     Out: writes g09 input files in subfolder within provided path.
     """
-    os.mkdir(os.path.join(path, 'g09_inputs'))
+    try:
+        os.mkdir(os.path.join(path, 'g09_inputs'))
+    except FileExistsError:
+        print('No directory created, g09_input already exists.')
     
     for i, job in enumerate(g09_jobs):
         filename = molname + str(i) + extension

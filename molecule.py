@@ -14,7 +14,7 @@ for implementation in compchemtools scripts."""
 #%% class coordinate
 
 class Coordinate():
-    """Coordinate in 3D space."""
+    """Cartesian coordinate in 3D space."""
     def __init__(self, x, y, z):
         self.x = x
         self.y = y
@@ -37,6 +37,8 @@ class Molecule():
     energy = 0, found = 0, charge = 0, mult = 1 (multiplicity).
     """
     
+    # Should add function to check if coordinates and atom_types have the
+    # same length
     def __init__(self, coordinates, atom_types):
         self.coordinates = coordinates
         self.atom_types = atom_types
@@ -44,7 +46,7 @@ class Molecule():
         self.found = 0
         self.charge = 0
         self.mult = 1
-        self.natoms = len(coordinates)
+        self.natoms = len(self.coordinates)
     
     def __repr__(self):
         return f'''Molecule with {self.natoms} atoms.

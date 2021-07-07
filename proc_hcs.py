@@ -6,14 +6,16 @@ Created on Mon Jul  5 14:03:46 2021
 @author: nat
 """
 
+#proc_hcs.py
+
+"""Set of functions for the extraction of useful information as well as geometries
+for all found conformations in a conformational search performed with Hyperchem,
+by the processing of .HCS file."""
+
+
 #%% modules
 
-# import os as os
-# import re as re
-#import pandas as pd
-#import numpy as np
-#import argparse as ap
-#import sys
+from molecule import Coordinate, Molecule
 
 #%% hcs_parser
 
@@ -35,10 +37,8 @@ def parse_hcs(hcs_file):
                     CurrentConf = []
                 CurrentConf.append(line)
             Confs.append(CurrentConf)
-        # InitInfo = Confs[0]
-        # del Confs[0]
     
-    except Exception as exc:
+    except Exception:
         print('Error: Cannot find file')
     
     return Confs
@@ -60,7 +60,8 @@ def get_conf_data(conformer):
 
 def get_conf_coord(conformer):
     """In: conformer is a list of strings (lines) with the info for 1 conformer.
-    Out: dictionary with atom number as key and coordinates [x, y, z] as value.
+    Out: dictionary with atom number as key and cartesian coordinates
+    (Coordinate class) as value.
     """
     
     conf_coord = {}
@@ -71,7 +72,9 @@ def get_conf_coord(conformer):
             atom_num = int(atom[0])
             coords = atom[1].split()
             
-            conf_coord[atom_num] = [float(coord) for coord in coords]
+            conf_coord[atom_num] = Coordinate(float(coords[0]),
+                                              float(coords[1]),
+                                              float(coords[2]))
 
     return conf_coord
     
@@ -87,7 +90,7 @@ def get_atom_types(init_info):
     for line in init_info:
         if line.startswith('atom'):
             atom = line[4:].split('**')[0]
-            atom_num = atom.split('-')[0].strip(' ')
+            atom_num = int(atom.split('-')[0].strip(' '))
             atom_type = atom.split('-')[1].strip(' ')
             
             atom_types[atom_num] = atom_type
@@ -98,38 +101,43 @@ def get_atom_types(init_info):
 
 #%% function to extract conformations from parsed hcs file
 
-def extract_confs(confs_list):
+def extract_confs(confs_list, charge = 0, multiplicity = 1):
     """In: list of lists with lines from hcs file (output from parse_hcs).
-    Out: Dictionary with conformer number as key and list of 
-    [energy, found, coords] as value. Coords is a list of lists as 
-    [atom number, atom type, (x, y, z)].
+    Out: List of Molecule objects. 
+    Each molecule contains energy, found, cartesian coordinates 
+    and atom types for the corresponding coformer. 
+    Charge and multiplicity different than 0, 1 can be provided.
     """
     
-    atom_types = get_atom_types(confs_list.pop(0)) # dictionary atom_number : atom_type
+    atom_types = get_atom_types(confs_list.pop(0)) 
+    # dictionary atom_number : atom_type
     
-    conformers = {}
-    for i, conformer in enumerate(confs_list):
+    conformers = []
+    for conformer in confs_list:
         energy, found = get_conf_data(conformer)
         coords_dict = get_conf_coord(conformer)
-        coords_list = []
-        for atom in coords_dict:
-            coords_list.append([atom_types[atom], atom,
-                                tuple(coords_dict[atom])])
-        conformers[i] = [energy, found, coords_list]
+        
+        molecule = Molecule(coords_dict, atom_types)
+        molecule.energy = energy
+        molecule.found = found
+        molecule.charge = charge
+        molecule.mult = multiplicity
+        
+        conformers.append(molecule)
     
     return conformers
 
 
 #%% main function
 
-def main(hcs_file):
-    """Processes hcs_file into a dictionary with the information for 
-    each found conformer.
+def main(hcs_file, charge = 0, multiplicity = 1):
+    """Processes hcs_file into a list of molecule objects for 
+    each found conformation or conformer.
     """
     
     confs_list = parse_hcs(hcs_file)
     
-    return extract_confs(confs_list)
+    return extract_confs(confs_list, charge, multiplicity)
 
 
             

@@ -12,19 +12,20 @@ job and route section details."""
 
 #%% modules
 
-from molecule import Coordinate, Molecule
+from molecule import Molecule
 
 
 #%% define class for g09 input
 
 class g09_job(Molecule):
-    """Docstring
+    """Object with molecule geometry and specifications and 
+    all information necessary for creating g09 input.
     """
     
     
     def __init__(self, molecule, nproc, mem, func, 
                  basis, job, chk):
-        super(self).__init__(self, molecule.coordinates, molecule.atom_types)
+        super().__init__(molecule.coordinates, molecule.atom_types)
         self.charge = molecule.charge
         self.mult = molecule.mult # multiplicity
         self.nproc = nproc #number of processors used
@@ -57,7 +58,7 @@ class g09_job(Molecule):
         (charge and multiplicity).
         """
         
-        return f'{self.charge}  {self.multiplicity}'
+        return f'{self.charge}  {self.mult}'
     
     def get_coords(self):
         """Returns list of strings for cartesian coordinates needed in
@@ -76,7 +77,7 @@ class g09_job(Molecule):
             
             # Write link0 command lines, turn list from getlin0 into lines
             out.writelines("%s\n" % l for l in self.get_link0()) 
-            out.write(blank)
+            out.write('\n')
             
             # Write route section, as returned from get_route
             out.write(self.get_route())
