@@ -60,12 +60,12 @@ class g09_job(Molecule):
         
         return f'{self.charge}  {self.mult}'
     
-    def get_coords(self):
-        """Returns list of strings for cartesian coordinates needed in
-        g09 input. Each element would be a line in the input file."""
+    # def get_coords(self):
+    #     """Returns list of strings for cartesian coordinates needed in
+    #     g09 input. Each element would be a line in the input file."""
         
-        return [f'{self.atom_types[atom]}  {self.coordinates[atom].x}  {self.coordinates[atom].y}  {self.coordinates[atom].z}' 
-                for atom in self.atom_types]
+    #     return [f'{self.atom_types[atom]}  {self.coordinates[atom].x}  {self.coordinates[atom].y}  {self.coordinates[atom].z}' 
+    #             for atom in self.atom_types]
     
     def write_input(self, file_name):
         """Writes input file into provided filename with g09 input format
@@ -95,7 +95,7 @@ class g09_job(Molecule):
             out.write('\n')
             
             #   atomic coordinates
-            out.writelines("%s\n" % l for l in self.get_coords())
+            out.writelines("%s\n" % l for l in self.strXYZ())
             
             # Final blank lines
             out.write('\n\n')

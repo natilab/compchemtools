@@ -15,7 +15,9 @@ by the processing of .HCS file."""
 
 #%% modules
 
-from molecule import Coordinate, Molecule
+from molecule import Molecule
+
+import numpy as np
 
 #%% hcs_parser
 
@@ -64,19 +66,17 @@ def get_conf_coord(conformer):
     (Coordinate class) as value.
     """
     
-    conf_coord = {}
+    conf_XYZ = {}
     
     for line in conformer:
         if line.startswith('X'):
             atom = line[2:].split(')=')
             atom_num = int(atom[0])
-            coords = atom[1].split()
+            rawXYZ = atom[1].split()
             
-            conf_coord[atom_num] = Coordinate(float(coords[0]),
-                                              float(coords[1]),
-                                              float(coords[2]))
+            conf_XYZ[atom_num] = np.array([float(coord) for coord in rawXYZ])
 
-    return conf_coord
+    return conf_XYZ
     
     
     

@@ -70,17 +70,13 @@ def write_g09ins(g09_jobs, molname, extension, path):
     """g09_jobs: list of g09_job objects.
     molname: string, for main name of files.
     extension: string, extension of file ('.com', '.gjf').
-    path: string, folder to work in. default: '.' (working directory).
+    path: string, folder to work in. default.
     Out: writes g09 input files in subfolder within provided path.
     """
-    try:
-        os.mkdir(os.path.join(path, 'g09_inputs'))
-    except FileExistsError:
-        print('No directory created, g09_input already exists.')
     
     for i, job in enumerate(g09_jobs):
-        filename = molname + '_' + str(i+1) + extension
-        job.write_input(os.path.join(path, 'g09_inputs', filename))
+        filename = molname + '_c' + str(i+1) + extension
+        job.write_input(os.path.join(path, filename))
 
 
 #%% write .csv file with conformational search info
@@ -100,14 +96,22 @@ def write_confSearch(mol_list, molname, path):
 
 def main(hcs_file, charge = 0, multiplicity = 1, nproc = 4, mem = 2, 
          func = 'B3LYP', basis = '6-31G*', job = '', chk = None, 
-         molname = 'mol', extension = '.com', path = '.'):
+         molname = 'mol', extension = '.com', pathin = '.', pathout = None):
     """Writes g09 inputs from hcs file and a csv file with
     energy and found values for each conformer."""
     
-    mol_list = get_mols(hcs_file, charge, multiplicity)
+    mol_list = get_mols(os.path.join(pathin, hcs_file), charge, multiplicity)
     job_list = create_g09ins(mol_list, nproc, mem, func, basis, job, chk)
-    write_g09ins(job_list, molname, extension, path)
-    write_confSearch(mol_list, molname, path)
+    
+    if not pathout:
+        try:
+            os.mkdir(os.path.join(pathin, 'g09_inputs'))
+        except FileExistsError:
+            print('No directory created, g09_input already exists.')            
+        pathout = os.path.join(pathin, 'g09_inputs')
+
+    write_g09ins(job_list, molname, extension, pathout)
+    write_confSearch(mol_list, molname, pathout)
 
 
 #%% 
@@ -119,11 +123,14 @@ if __name__ == '__main__':
     
     parser.add_argument('input', type = str, 
                         help = 'input .HCS file')
+    parser.add_argument('-pi', '--pathin', type = str, default = '.',
+                        help = 'path for input hcs file')
     parser.add_argument('-c', '--charge', type = int, default = 0)
     parser.add_argument('-m', '--mult', type = int, default = 1,
                         help = 'multiplicity')
-    parser.add_argument('-p', '--path', type = str, default = '.',
-                        help = 'path to folder for writing files')
+    parser.add_argument('-po', '--pathout', type = str, default = None,
+                        help = 'path for directory to write created files, \
+                            if no path is provided, g09_input subfolder is created in input path.')
     parser.add_argument('-N', '--name', type = str, default = 'mol',
                         help = 'molecule name for generated input files')
     parser.add_argument('-o', '--out', type = str, default = '.com',
@@ -147,7 +154,7 @@ if __name__ == '__main__':
     main(hcs_file = args.input, charge = args.charge, multiplicity = args.mult,
          nproc = args.nproc, mem = args.mem, func = args.func, basis = args.basis,
          job = args.job, chk = args.chk, molname = args.name, extension = args.out,
-         path = args.path)
+         pathin = args.pathin, pathout = args.pathout)
     
 
     
