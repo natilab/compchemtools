@@ -22,9 +22,8 @@ class g09_job(Molecule):
     all information necessary for creating g09 input.
     """
     
-    
-    def __init__(self, molecule, nproc, mem, func, 
-                 basis, job, chk):
+    def __init__(self, molecule, nproc = 4, mem = 2, func = '', 
+                 basis = '', job = '', chk = None):
         super().__init__(molecule.coordinates, molecule.atom_types)
         self.charge = molecule.charge
         self.mult = molecule.mult # multiplicity

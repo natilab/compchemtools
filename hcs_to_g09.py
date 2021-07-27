@@ -137,7 +137,7 @@ if __name__ == '__main__':
                         help = 'file extension for g09 files')
     parser.add_argument('-n', '--nproc', type = int, default = 4,
                         help = 'Number of processors to use')
-    parser.add_argument('-M', '--mem', type = int, default = 4,
+    parser.add_argument('-M', '--mem', type = int, default = 2,
                         help = 'Memory to use, in GB')
     parser.add_argument('-f', '--func', type = str, default = 'B3LYP',
                         help = 'functional to use, must be accepted by g09')

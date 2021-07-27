@@ -62,8 +62,8 @@ def get_conf_data(conformer):
 
 def get_conf_coord(conformer):
     """In: conformer is a list of strings (lines) with the info for 1 conformer.
-    Out: dictionary with atom number as key and cartesian coordinates
-    (Coordinate class) as value.
+    Out: dictionary with atom number as key and cartesian coordinates 
+    as value.
     """
     
     conf_XYZ = {}

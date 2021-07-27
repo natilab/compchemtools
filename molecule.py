@@ -11,20 +11,6 @@ Created on Tue Jul  6 13:48:56 2021
 """Definition of molecule classes
 for implementation in compchemtools scripts."""
 
-#%% class coordinate
-
-class Coordinate():
-    """Cartesian coordinate in 3D space."""
-    def __init__(self, x, y, z):
-        self.x = x
-        self.y = y
-        self.z = z
-    
-    def __repr__(self):
-        return f'Coordinate({self.x}, {self.y}, {self.z})'
-    
-    def __str__(self):
-        return f'({self.x}, {self.y}, {self.z})'
 
 #%% class Molecule
 
@@ -66,8 +52,8 @@ class Molecule():
 
     def __str__(self):
         fullXYZstring = ('\n').join(self.strXYZ())
-        return f'''Molecule {self.title} with {self.natoms} atoms.
-    {fullXYZstring}'''
+        return f'''Molecule {self.title} with {self.natoms} atoms. 
+{fullXYZstring}'''
 
     def arrXYZ(self):
         """Returns a list of XYZ coordinates as np.arrays."""
