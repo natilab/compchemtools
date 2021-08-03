@@ -66,7 +66,7 @@ def create_g09ins(mol_list, nproc, mem, func, basis, job, chk = None):
 
 #%% write g09 inputs in subfolder
 
-def write_g09ins(g09_jobs, molname, extension, path):
+def write_g09ins(g09_jobs, molname, extension, suffix, path):
     """g09_jobs: list of g09_job objects.
     molname: string, for main name of files.
     extension: string, extension of file ('.com', '.gjf').
@@ -75,7 +75,7 @@ def write_g09ins(g09_jobs, molname, extension, path):
     """
     
     for i, job in enumerate(g09_jobs):
-        filename = molname + '_c' + str(i+1) + extension
+        filename = molname + '_c' + str(i+1) + suffix + extension
         job.write_input(os.path.join(path, filename))
 
 
@@ -94,24 +94,37 @@ def write_confSearch(mol_list, molname, path):
 
 #%% main function
 
-def main(hcs_file, charge = 0, multiplicity = 1, nproc = 4, mem = 2, 
-         func = 'B3LYP', basis = '6-31G*', job = '', chk = None, 
-         molname = 'mol', extension = '.com', pathin = '.', pathout = None):
-    """Writes g09 inputs from hcs file and a csv file with
-    energy and found values for each conformer."""
+def main(hcs_files = None, charge = 0, multiplicity = 1, nproc = 4, mem = 2, 
+         func = 'B3LYP', basis = '6-31G*', job = '', chk = None,  
+         extension = '.com', pathin = '.', pathout = None,
+         suffix = 'opt'):
+    """Writes g09 inputs from hcs files and a csv file with
+    energy and found values for each conformer for each hcs file."""
+
+    if not hcs_files:
+        hcs_files = [x for x in os.listdir(pathin) if x.lower().endswith('hcs')]
     
-    mol_list = get_mols(os.path.join(pathin, hcs_file), charge, multiplicity)
-    job_list = create_g09ins(mol_list, nproc, mem, func, basis, job, chk)
-    
+    if len(hcs_files) == 0:
+        raise ValueError('No hcs files found.')
+
     if not pathout:
         try:
             os.mkdir(os.path.join(pathin, 'g09_inputs'))
         except FileExistsError:
             print('No directory created, g09_input already exists.')            
         pathout = os.path.join(pathin, 'g09_inputs')
+    
+    
+    for hcs_file in hcs_files:
+        mol_list = get_mols(os.path.join(pathin, hcs_file), charge, multiplicity)
+        job_list = create_g09ins(mol_list, nproc, mem, func, basis, job, chk)
+        molname = hcs_file.split('.')[0]
 
-    write_g09ins(job_list, molname, extension, pathout)
-    write_confSearch(mol_list, molname, pathout)
+        write_g09ins(job_list, molname, extension, suffix, pathout)
+        write_confSearch(mol_list, molname, pathin)
+    
+
+
 
 
 #%% 
@@ -121,8 +134,8 @@ if __name__ == '__main__':
     parser = ap.ArgumentParser(prog = 'hcs_to_g09', 
                                description = 'Write g09 input files from .HCS file')
     
-    parser.add_argument('input', type = str, 
-                        help = 'input .HCS file')
+    parser.add_argument('-i', '--input', type = list, default = None, 
+                        help = 'list of input .HCS files')
     parser.add_argument('-pi', '--pathin', type = str, default = '.',
                         help = 'path for input hcs file')
     parser.add_argument('-c', '--charge', type = int, default = 0)
@@ -131,10 +144,10 @@ if __name__ == '__main__':
     parser.add_argument('-po', '--pathout', type = str, default = None,
                         help = 'path for directory to write created files, \
                             if no path is provided, g09_input subfolder is created in input path.')
-    parser.add_argument('-N', '--name', type = str, default = 'mol',
-                        help = 'molecule name for generated input files')
     parser.add_argument('-o', '--out', type = str, default = '.com',
                         help = 'file extension for g09 files')
+    parser.add_argument('-sx', '--suffix', type = str, default = 'opt',
+                        help = 'suffix to add to filename for generated input files')
     parser.add_argument('-n', '--nproc', type = int, default = 4,
                         help = 'Number of processors to use')
     parser.add_argument('-M', '--mem', type = int, default = 2,
@@ -151,10 +164,10 @@ if __name__ == '__main__':
     
     args = parser.parse_args()
     
-    main(hcs_file = args.input, charge = args.charge, multiplicity = args.mult,
+    main(hcs_files = args.input, charge = args.charge, multiplicity = args.mult,
          nproc = args.nproc, mem = args.mem, func = args.func, basis = args.basis,
-         job = args.job, chk = args.chk, molname = args.name, extension = args.out,
-         pathin = args.pathin, pathout = args.pathout)
+         job = args.job, chk = args.chk, extension = args.out,
+         pathin = args.pathin, pathout = args.pathout, suffix = args.suffix)
     
 
     

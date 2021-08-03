@@ -102,7 +102,7 @@ def main(path, time, g09_files = None, sh_name = 'a', extension = '.com'):
         
     for i, file in enumerate(g09_files):
         nproc = get_nproc(os.path.join(path, file))
-        jobname = 'g09_' + file.split('.')[0]
+        jobname = sh_name + str(i+1) + '_' + file.split('.')[0]
         write_sh(os.path.join(path, sh_name + str(i+1) + '.sh'), 
                  nproc, time, jobname, file)
         

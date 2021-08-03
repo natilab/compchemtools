@@ -89,9 +89,9 @@ def get_atom_types(init_info):
     atom_types = {}
     for line in init_info:
         if line.startswith('atom'):
-            atom = line[4:].split('**')[0]
-            atom_num = int(atom.split('-')[0].strip(' '))
-            atom_type = atom.split('-')[1].strip(' ')
+            atom = line[4:].split()
+            atom_num = int(atom[0])
+            atom_type = atom[2]
             
             atom_types[atom_num] = atom_type
     

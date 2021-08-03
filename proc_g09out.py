@@ -12,7 +12,7 @@ Created on Mon Jul  5 14:26:03 2021
 import os
 
 import g09opt, g09freq
-from molecule import Molecule
+# from molecule import Molecule
 from write_g09in import g09_job
 
 #%% open file and check normal term
@@ -185,7 +185,7 @@ def out_proc(g09out_name, pathin, steps, get_sp = False):
             #For now, only process finalSCF and final geometry.
             
             ### write g09 input with final geom
-            input_name = g09out_name.rsplit(".", 1)[0] + '_opt.com'
+            input_name = g09out_name.rsplit(".", 1)[0] + '_geom.com'
             g09_in = g09_job(opt_results[1]) 
             g09_in.write_input(os.path.join(pathout, input_name))
             
@@ -196,7 +196,7 @@ def out_proc(g09out_name, pathin, steps, get_sp = False):
             if type(freqs) != int:
                 results += [freqs[0], freqs[1]] + energies
             else:
-                results += [freqs, 0] + energies
+                results += [freqs, 'NA'] + energies
             
         
         else:
@@ -223,11 +223,11 @@ def out_proc(g09out_name, pathin, steps, get_sp = False):
         #                   'electronic+enthalpy', 'electronic+entropy', 'electronic+free']
         
         freqs, energies = freq_proc(parsed_out)
-        
-        if len(freqs) > 1:
+                    
+        if type(freqs) != int:
             results += [freqs[0], freqs[1]] + energies
         else:
-            results += [freqs, 0] + energies
+            results += [freqs, 'NA'] + energies
     
         
     elif get_sp:
@@ -251,7 +251,7 @@ def main(path, g09_files = None, steps = False, extension = '.log', get_sp = Fal
         g09_files = [x for x in os.listdir(path) if x.endswith(extension)]
     
     if len(g09_files) == 0:
-        print(f'No files of extension {extension} found.')
+        raise ValueError(f'No files of extension {extension} found.')
     
     for i, file in enumerate(g09_files):
         if not check_term(file, path):
@@ -269,7 +269,10 @@ def main(path, g09_files = None, steps = False, extension = '.log', get_sp = Fal
     
     results = []
     for filename in g09_files:
-        results.append(out_proc(filename, path, steps, get_sp))
+        try:
+            results.append(out_proc(filename, path, steps, get_sp))
+        except Exception as e:
+            print(f'Could not process {filename}. Error: {e}')
     
     with open(os.path.join(path, 'g09_results.csv'), 'w') as out:
         out.write(','.join(result_headers))
