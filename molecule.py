@@ -63,7 +63,7 @@ class Molecule():
     def strXYZ(self):
         """Returns a list of strings with atom type and XYZ coordinates."""
         XYZ = self.arrXYZ()
-        return [f'{self.atom_types[n]}  {XYZ[n-1][0]} {XYZ[n-1][1]} {XYZ[n-1][2]}'  \
+        return [f'{self.atom_types[n]}  {XYZ[n-1][0]:.8f} {XYZ[n-1][1]:.8f} {XYZ[n-1][2]:.8f}'  \
                 for n in self.atom_types]
 
 
