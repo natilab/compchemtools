@@ -97,17 +97,21 @@ def get_jobs(g09out):
     with open(g09out) as out:
         for line in out:
             if line.strip().startswith('#'):
-                route = line
-                if 'opt' in line.lower():
-                    jobs += 'opt '
-                if 'freq' in line.lower():
-                    jobs += 'freq '
-                if 'irc' in line.lower():
-                    jobs += 'irc '
-                if 'stable' in line.lower():
-                    jobs += 'stable '
-                
+                route = line.strip('\n')
+                line = next(out)
+                while not line.strip().startswith('-'):
+                    route += line.strip('\n')
+                    line = next(out)
                 break
+            
+    if 'opt' in route.lower():
+        jobs += 'opt '
+    if 'freq' in route.lower():
+        jobs += 'freq '
+    if 'irc' in route.lower():
+        jobs += 'irc '
+    if 'stable' in route.lower():
+        jobs += 'stable '
             
     return jobs, route
                 

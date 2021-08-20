@@ -134,8 +134,8 @@ if __name__ == '__main__':
     parser = ap.ArgumentParser(prog = 'hcs_to_g09', 
                                description = 'Write g09 input files from .HCS file')
     
-    parser.add_argument('-i', '--input', type = list, default = None, 
-                        help = 'list of input .HCS files')
+    parser.add_argument('-i', '--input', nargs = '+', default = None, 
+                        help = 'list of input .HCS files, separated by blankspaces')
     parser.add_argument('-pi', '--pathin', type = str, default = '.',
                         help = 'path for input hcs file')
     parser.add_argument('-c', '--charge', type = int, default = 0)
