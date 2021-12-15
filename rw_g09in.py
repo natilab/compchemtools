@@ -53,6 +53,9 @@ def main(path, g09_files = None, extension = '.com', route = None, chk = False, 
     
     if len(g09_files) == 0:
         print('No g09 input files found.')    
+    
+    if chk == 'F':
+        chk = False
 
     for file in g09_files:
         if chk: 

@@ -97,10 +97,10 @@ def get_jobs(g09out):
     with open(g09out) as out:
         for line in out:
             if line.strip().startswith('#'):
-                route = line.strip('\n')
+                route = line.strip('\n').strip(' ')
                 line = next(out)
                 while not line.strip().startswith('-'):
-                    route += line.strip('\n')
+                    route += line.strip('\n').strip(' ')
                     line = next(out)
                 break
             
