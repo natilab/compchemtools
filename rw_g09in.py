@@ -27,7 +27,7 @@ def rewrite_g09in(g09in_file, route = None, chk = None, mem = None, nproc = None
     with open(g09in_file, 'w') as newfile:
         i = 0
         if chk:
-            newfile.write(f'%chk:{chk} \n')
+            newfile.write(f'%chk={chk} \n')
             
             if 'chk' in in_file[0]:
                 i += 1
