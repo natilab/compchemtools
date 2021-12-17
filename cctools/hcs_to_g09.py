@@ -20,8 +20,8 @@ into csv file.
 
 import os
 
-import proc_hcs
-from write_g09in import g09_job
+from cctools import proc_hcs
+from cctools.write_g09in import g09_job
 
 
 

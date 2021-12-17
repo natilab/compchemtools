@@ -160,7 +160,7 @@ def get_args_4():
 
 def task1():
     """Get arguments for task 1 and do task."""
-    import proc_g09out
+    from cctools import proc_g09out
     
     path, extension, get_sp = get_args_1()
     
@@ -170,7 +170,7 @@ def task1():
 
 def task2():
     """Get arguments for task 2 and do task."""
-    import write_sh
+    from cctools import write_sh
     
     path, extension, time, nfiles = get_args_2()
     
@@ -181,7 +181,7 @@ def task2():
 
 def task3():
     """Get arguments for task 3 and do task."""
-    import hcs_to_g09
+    from cctools import hcs_to_g09
     
     path, extension, mps, gjs = get_args_3()
     
@@ -215,7 +215,7 @@ def task3():
 
 def task4():
     """Get arguments for task 4 and do task."""
-    import rw_g09in
+    from cctool import rw_g09in
     
     path, extension, nproc, mem, route, chk = get_args_4()
     

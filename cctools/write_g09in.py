@@ -12,7 +12,7 @@ job and route section details."""
 
 #%% modules
 
-from molecule import Molecule
+from cctools.molecule import Molecule
 
 
 #%% define class for g09 input

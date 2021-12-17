@@ -15,7 +15,7 @@ Created on Mon Jul 19 15:10:12 2021
 import numpy as np
 # import re
 
-from molecule import Molecule
+from cctools.molecule import Molecule
 
 
 
@@ -219,26 +219,7 @@ def main(g09opt, steps):
     
 
 
-#%% read opt
-# import os
 
-
-
-# def remove_empty(string):
-#     """Returns string without empty lines"""
-    
-#     return "".join([s for s in string.strip().splitlines(True) if s.strip("\r\n").strip()])
-
-# opt_chunk = []
-# with open('5Xa.log', 'r') as out:
-# #    out = remove_empty(out)
-#     for i, line in enumerate(out):
-#         opt_chunk.append(line)
-#         if 'Normal termination' in line:
-#             print(line)
-#             break
-            
-    
 
 
     

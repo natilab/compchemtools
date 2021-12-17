@@ -11,9 +11,9 @@ Created on Mon Jul  5 14:26:03 2021
 
 import os
 
-import g09opt, g09freq
+from cctools import g09opt, g09freq
 # from molecule import Molecule
-from write_g09in import g09_job
+from cctools.write_g09in import g09_job
 
 #%% open file and check normal term
 
