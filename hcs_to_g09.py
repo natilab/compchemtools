@@ -75,7 +75,7 @@ def write_g09ins(g09_jobs, molname, extension, suffix, path):
     """
     
     for i, job in enumerate(g09_jobs):
-        filename = molname + '_c' + str(i+1) + suffix + extension
+        filename = molname + '_c' + str(i+1) + '_' + suffix + extension
         job.write_input(os.path.join(path, filename))
 
 
