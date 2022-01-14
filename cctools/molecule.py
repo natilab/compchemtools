@@ -11,6 +11,18 @@ Created on Tue Jul  6 13:48:56 2021
 """Definition of molecule classes
 for implementation in compchemtools scripts."""
 
+#%% periodic table
+
+periodic_table = ["","H","He","Li","Be","B","C","N","O","F","Ne","Na","Mg",
+                  "Al","Si","P","S","Cl","Ar","K","Ca","Sc","Ti","V","Cr","Mn",
+                  "Fe","Co","Ni","Cu","Zn","Ga","Ge","As","Se","Br","Kr","Rb",
+                  "Sr","Y","Zr","Nb","Mo","Tc","Ru","Rh","Pd","Ag","Cd","In",
+                  "Sn","Sb","Te","I","Xe","Cs","Ba","La","Ce","Pr","Nd","Pm",
+                  "Sm","Eu","Gd","Tb","Dy","Ho","Er","Tm","Yb","Lu","Hf","Ta",
+                  "W","Re","Os","Ir","Pt","Au","Hg","Tl","Pb","Bi","Po","At",
+                  "Rn","Fr","Ra","Ac","Th","Pa","U","Np","Pu","Am","Cm","Bk",
+                  "Cf","Es","Fm","Md","No","Lr","Rf","Db","Sg","Bh","Hs","Mt",
+                  "Ds","Rg","Uub","Uut","Uuq","Uup","Uuh","Uus","Uuo"]
 
 #%% class Molecule
 
@@ -65,6 +77,13 @@ class Molecule():
         XYZ = self.arrXYZ()
         return [f'{self.atom_types[n]}  {XYZ[n-1][0]:.8f} {XYZ[n-1][1]:.8f} {XYZ[n-1][2]:.8f}'  \
                 for n in self.atom_types]
+    
+    def csvXYZ(self):
+        """Returns a list of strings with atom type and XYZ coordinates 
+        separated by commas."""
+        XYZ = self.arrXYZ()
+        return [f'{periodic_table[self.atom_types[n]]}, {XYZ[n-1][0]:.8f}, {XYZ[n-1][1]:.8f}, {XYZ[n-1][2]:.8f}'  \
+                for n in self.atom_types]        
 
 
 

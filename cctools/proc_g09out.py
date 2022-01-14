@@ -11,9 +11,9 @@ Created on Mon Jul  5 14:26:03 2021
 
 import os
 
-from cctools import g09opt, g09freq
+import g09opt, g09freq
 # from molecule import Molecule
-from cctools.write_g09in import g09_job
+from write_g09in import g09_job
 
 #%% open file and check normal term
 
@@ -145,7 +145,8 @@ def parse_file(g09out, jobs):
 def opt_proc(parsed_opt, steps):
     """Does processing for parsed optimization job.
     If steps = False, returns only final SCF energy.
-    If steps = True, return also np array with energy for each step."""
+    If steps = True, return also np array with energy for each step
+    (not implemented yet)."""
     
     return g09opt.main(parsed_opt, steps)
     

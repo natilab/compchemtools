@@ -12,7 +12,7 @@ Created on Thu Jul 22 12:21:48 2021
 
 #%% modules
 
-from cctools.g09opt import get_SCF
+from g09opt import get_SCF
 
 #%% get frequencies 
 

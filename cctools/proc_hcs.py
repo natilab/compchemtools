@@ -15,7 +15,7 @@ by the processing of .HCS file."""
 
 #%% modules
 
-from cctools.molecule import Molecule
+from molecule import Molecule
 
 import numpy as np
 

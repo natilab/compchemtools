@@ -15,7 +15,7 @@ Created on Mon Jul 19 15:10:12 2021
 import numpy as np
 # import re
 
-from cctools.molecule import Molecule
+from molecule import Molecule
 
 
 
