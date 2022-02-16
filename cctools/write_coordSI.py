@@ -56,7 +56,18 @@ def get_out_freq(parsed_freq_job):
     
     return energy, free_energy, n_neg, molecule
     
+def get_molecule_opt(parsed_opt_out):
+    """Get molecule of final structure from optimization job.
+    In: parsed opt output.
+    Out: molecule (coordinates in a molecule class object)."""
 
+    opt_steps = split_opt(parsed_opt_out)
+    check_opt(parsed_opt_out)    
+
+    molecule = get_molecule(opt_steps[-2]) # final molecule
+    
+    return molecule
+    
     
 def get_out_opt(parsed_opt_out):
     """Get information from parsed optimization output to write SI.
@@ -129,8 +140,8 @@ def sp_to_list(parsed_sp_job):
 
 #%% g09out_to_list
 
-def g09out_to_list(pathin, g09out_name):
-    """Get output string list for writing SI from g09 output file."""
+def g09out_to_csv_list(pathin, g09out_name):
+    """Get output string list for writing SI csv from g09 output file."""
     
     jobs, route = get_jobs(os.path.join(pathin, g09out_name))
     parsed_out = parse_file(os.path.join(pathin, g09out_name), jobs)
@@ -154,11 +165,54 @@ def g09out_to_list(pathin, g09out_name):
     
     return output_list
 
+#%% g09out_to_xyz
+
+def g09out_to_xyz(pathin, g09out_name):
+    """Get output string list for writing SI xyz from g09 output file."""
+
+    jobs, route = get_jobs(os.path.join(pathin, g09out_name))
+    parsed_out = parse_file(os.path.join(pathin, g09out_name), jobs)
+
+    if 'opt' in jobs:
+        if 'freq' in jobs:
+            # opt and freq job
+            molecule = get_molecule(parsed_out[1])
+        else:
+            # only opt job
+            molecule = get_molecule_opt(parsed_out)
+    else:
+        # freq or sp job
+        molecule = get_molecule(parsed_out)
+    
+    xyz_out = [f'{molecule.natoms}', f'{g09out_name}'] + molecule.strXYZ()
+    
+    return xyz_out
+    
+    
+#%% write csv
+
+def write_csv(path, out_filename, results):
+    with open(os.path.join(path, out_filename + '.csv'), 'w') as out:
+        for filename, out_list in results.items():
+            out.write(filename + ' \n')
+            out.writelines("%s\n" % l for l in out_list)
+            out.write('\n\n')
+
+
+#%% write xyz
+
+def write_xyz(path, out_filename, results):
+    with open(os.path.join(path, out_filename + '.xyz'), 'w') as out:
+        for filename, out_list in results.items():
+            out.writelines("%s\n" % l for l in out_list)
+            out.write('\n\n')
+    
 
 
 #%% main function
 
-def main(path, g09_files = None, out_filename = "SI_coords", extension = '.log'):
+def main(path, g09_files = None, out_filename = "SI_coords", 
+         extension = '.log', out_type = 'both'):
     
     if not g09_files:
         g09_files = [x for x in os.listdir(path) if x.endswith(extension)]
@@ -172,20 +226,44 @@ def main(path, g09_files = None, out_filename = "SI_coords", extension = '.log')
             error_file = g09_files.pop(i)
             print(f'{error_file} did not end in normal termination.')
     
-    results = {}
-
-    for filename in g09_files:
-        try:
-            results[filename] = g09out_to_list(path, filename)
-            
-        except Exception as e:
-            print(f'Could not process {filename}. Error: {e}')
     
-    with open(os.path.join(path, out_filename + '.csv'), 'w') as out:
-        for filename, out_list in results.items():
-            out.write(filename + ' \n')
-            out.writelines("%s\n" % l for l in out_list)
-            out.write('\n\n')
+    if out_type == 'csv':
+        results = {}
+        for filename in g09_files:
+            try:
+                results[filename] = g09out_to_csv_list(path, filename)
+                
+            except Exception as e:
+                print(f'Could not process {filename}. Error: {e}')
+        
+        write_csv(path, out_filename, results)
+    
+    elif out_type == 'xyz':
+        results_xyz = {}
+        for filename in g09_files:
+            try:
+                results_xyz[filename] = g09out_to_xyz(path, filename)
+                
+            except Exception as e:
+                print(f'Could not process {filename}. Error: {e}')
+        
+        write_xyz(path, out_filename, results_xyz)
+        
+    elif out_type == 'both':
+        results = {}
+        results_xyz = {}
+        for filename in g09_files:
+            try:
+                results[filename] = g09out_to_csv_list(path, filename)
+                results_xyz[filename] = g09out_to_xyz(path, filename)
+            except Exception as e:
+                print(f'Could not process {filename}. Error: {e}')
+        
+        write_csv(path, out_filename, results)
+        write_xyz(path, out_filename, results_xyz)
+        
+    
+    
 
 
 #%% input parser
@@ -206,9 +284,11 @@ if __name__ == '__main__':
     parser.add_argument('-e', '--ext', type = str, default = '.log',
                         help = 'extension of g09 output files. if incorrect files wont be found')
     parser.add_argument('-o', '--out_name', type = str, default = 'SI_coords',
-                        help = 'Name for output .csv file (without extension), defaults to SI_coords')
+                        help = 'Name for output file (without extension), defaults to SI_coords')
+    parser.add_argument('-ot', '--out_type', type = str, default = "both",
+                        help = 'type of output for SI coordinates (csv/xyz/both)')
  
     args = parser.parse_args()
      
     main(args.path, g09_files = args.input, out_filename = args.out_name,
-         extension = args.ext)
+         extension = args.ext, out_type = args.out_type)
