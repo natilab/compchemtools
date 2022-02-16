@@ -10,9 +10,6 @@ Created on Mon Dec  6 17:27:50 2021
 
 """Interactive wrapper for computational chemistry scripts."""
 
-#%% modules
-
-
 
 #%% function to get task
 
@@ -23,13 +20,14 @@ def get_task():
           1: Process g09 outputs (opt, freq or sp jobs).
           2: Write .sh files for g09 input files.
           3: Process conformational search results (.hcs).
-          4: Change link0 and route lines in existing g09 input files.''')
+          4: Change link0 and route lines in existing g09 input files.
+          5: Generate cartesian coordinates for SI.''')
     task_num = input("Enter task number:")
     if not task_num.strip().isdigit():
         print("Error. Input must be an integer between 1 and 4.")
         task_num = get_task()
     else:
-        if int(task_num) > 4 or int(task_num) < 0:
+        if int(task_num) > 5 or int(task_num) < 0:
             print("Error. Input must be an integer between 1 and 4.")
             task_num = get_task()
         else:
@@ -142,7 +140,7 @@ def get_args_4():
     
     # task 4: rewrite g09 files. Arguments needed for rw_g09in.py
     path = input("Path to g09 input files:")
-    extension = input("Extension of g09 output files (.com/.gjf):")
+    extension = input("Extension of g09 input files (.com/.gjf):")
     
     nproc = get_nproc()
     mem = get_mem()    
@@ -156,6 +154,19 @@ def get_args_4():
         chk = True
     
     return path, extension, nproc, mem, route, chk
+
+
+def get_args_5():
+    """Get arguments for task 5 from command line input."""
+    
+    # task 5: get coordinates for SI, write csv and/or xyz. 
+    # Arguments needed for write_coordSI.py
+    path = input("Path to g09 output files:")
+    extension = input("Extension of g09 output files (.log/.out):")
+    out_type = input("Type of ouptut file (csv/xyz/both):")
+        
+    return path, extension, out_type
+
 
 #%% task 1 
 
@@ -224,6 +235,16 @@ def task4():
     rw_g09in.main(path, extension = extension, route = route, chk = chk, 
                   mem = mem, nproc = nproc)
 
+#%% task 5
+
+def task5():
+    """Get arguments for task 5 and do task."""
+    import write_coordSI
+    
+    path, extension, out_type = get_args_5()
+    
+    write_coordSI.main(path, extension = extension, out_type = out_type)
+
 
 #%% main
 
@@ -239,6 +260,8 @@ def main():
         task3()
     elif task == 4:
         task4()
+    elif task == 5:
+        task5()
 
     
 #%%
