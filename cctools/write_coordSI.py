@@ -8,7 +8,7 @@ Created on Fri Jan 14 16:33:51 2022
 
 # write_coordSI.py
 
-"""Write .csv file with information and coordinates from g09 output files 
+"""Write .txt and/or .xyz file with information and coordinates from g09 output files 
 in format for Supporting Information."""
 
 #%% modules
@@ -103,7 +103,7 @@ def list_freq_out(energy, free_energy, n_neg, molecule):
     freq_out = [f'Energy = {energy}',
                 f'Free Energy = {free_energy}',
                 f'Number of Imaginary Frequencies = {n_neg}',
-                f'Geometry'] + molecule.csvXYZ()
+                f'Geometry'] + molecule.tabXYZ()
     
     return freq_out
 
@@ -111,7 +111,7 @@ def list_scf_out(energy, molecule):
     """Get list output for SI for opt or SP job. 
     Out: list of strings, values separated by commas in each string."""    
     
-    scf_out = [f'Energy = {energy}'] + molecule.csvXYZ()
+    scf_out = [f'Energy = {energy}'] + molecule.tabXYZ()
     
     return scf_out
 
@@ -140,8 +140,8 @@ def sp_to_list(parsed_sp_job):
 
 #%% g09out_to_list
 
-def g09out_to_csv_list(pathin, g09out_name):
-    """Get output string list for writing SI csv from g09 output file."""
+def g09out_to_txt_list(pathin, g09out_name):
+    """Get output string list for writing SI txt from g09 output file."""
     
     jobs, route = get_jobs(os.path.join(pathin, g09out_name))
     parsed_out = parse_file(os.path.join(pathin, g09out_name), jobs)
@@ -189,10 +189,10 @@ def g09out_to_xyz(pathin, g09out_name):
     return xyz_out
     
     
-#%% write csv
+#%% write txt
 
-def write_csv(path, out_filename, results):
-    with open(os.path.join(path, out_filename + '.csv'), 'w') as out:
+def write_txt(path, out_filename, results):
+    with open(os.path.join(path, out_filename + '.txt'), 'w') as out:
         for filename, out_list in results.items():
             out.write(filename + ' \n')
             out.writelines("%s\n" % l for l in out_list)
@@ -227,16 +227,16 @@ def main(path, g09_files = None, out_filename = "SI_coords",
             print(f'{error_file} did not end in normal termination.')
     
     
-    if out_type == 'csv':
+    if out_type == 'txt':
         results = {}
         for filename in g09_files:
             try:
-                results[filename] = g09out_to_csv_list(path, filename)
+                results[filename] = g09out_to_txt_list(path, filename)
                 
             except Exception as e:
                 print(f'Could not process {filename}. Error: {e}')
         
-        write_csv(path, out_filename, results)
+        write_txt(path, out_filename, results)
     
     elif out_type == 'xyz':
         results_xyz = {}
@@ -254,12 +254,12 @@ def main(path, g09_files = None, out_filename = "SI_coords",
         results_xyz = {}
         for filename in g09_files:
             try:
-                results[filename] = g09out_to_csv_list(path, filename)
+                results[filename] = g09out_to_txt_list(path, filename)
                 results_xyz[filename] = g09out_to_xyz(path, filename)
             except Exception as e:
                 print(f'Could not process {filename}. Error: {e}')
         
-        write_csv(path, out_filename, results)
+        write_txt(path, out_filename, results)
         write_xyz(path, out_filename, results_xyz)
         
     
@@ -273,7 +273,7 @@ if __name__ == '__main__':
     
     import argparse as ap
     parser = ap.ArgumentParser(prog = 'write_coordSI', 
-                               description = """Write .csv file with information 
+                               description = """Write .txt file with information 
                                and coordinates from g09 output files 
                                in format for Supporting Information.""")
     
@@ -286,7 +286,7 @@ if __name__ == '__main__':
     parser.add_argument('-o', '--out_name', type = str, default = 'SI_coords',
                         help = 'Name for output file (without extension), defaults to SI_coords')
     parser.add_argument('-ot', '--out_type', type = str, default = "both",
-                        help = 'type of output for SI coordinates (csv/xyz/both)')
+                        help = 'type of output for SI coordinates (txt/xyz/both)')
  
     args = parser.parse_args()
      

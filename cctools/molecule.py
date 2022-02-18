@@ -75,7 +75,7 @@ class Molecule():
     def strXYZ(self):
         """Returns a list of strings with atom type and XYZ coordinates."""
         XYZ = self.arrXYZ()
-        return [f'{self.atom_types[n]}  {XYZ[n-1][0]:.8f} {XYZ[n-1][1]:.8f} {XYZ[n-1][2]:.8f}'  \
+        return [f'{self.atom_types[n]} {XYZ[n-1][0]:.8f} {XYZ[n-1][1]:.8f} {XYZ[n-1][2]:.8f}'  \
                 for n in self.atom_types]
     
     def csvXYZ(self):
@@ -85,6 +85,12 @@ class Molecule():
         return [f'{periodic_table[self.atom_types[n]]}, {XYZ[n-1][0]:.8f}, {XYZ[n-1][1]:.8f}, {XYZ[n-1][2]:.8f}'  \
                 for n in self.atom_types]        
 
+    def tabXYZ(self):
+        """Returns a list of strings with atom type and XYZ coordinates 
+        separated by commas."""
+        XYZ = self.arrXYZ()
+        return [f'{periodic_table[self.atom_types[n]]}\t{XYZ[n-1][0]:.8f}\t{XYZ[n-1][1]:.8f}\t{XYZ[n-1][2]:.8f}'  \
+                for n in self.atom_types]        
 
 
 

@@ -163,7 +163,7 @@ def get_args_5():
     # Arguments needed for write_coordSI.py
     path = input("Path to g09 output files:")
     extension = input("Extension of g09 output files (.log/.out):")
-    out_type = input("Type of ouptut file (csv/xyz/both):")
+    out_type = input("Type of ouptut file (txt/xyz/both):")
         
     return path, extension, out_type
 
