@@ -185,9 +185,15 @@ def get_specs(opt_steps):
             charge = int(line.split()[2])
             mult = int(line.split()[5])
             break
-    
-    return charge, mult, name
-            
+    try:
+        return charge, mult, name
+    except Exception as e:
+        charge = 0
+        mult = 1
+        print(f'Could not find charge and multiplicity. Using 0 and 1. Error: {e}')
+        return charge, mult, name 
+
+
 
 #%% full processing of opt chunk
 
