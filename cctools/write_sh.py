@@ -47,7 +47,8 @@ def write_sh(filename, nproc, time, jobname, g09in_file):
 
     gaussroot_chunk = ['# ------- Defining root directory for gaussian \n',
                        'g09root=/share/apps/Gaussian09/EM64T.SSE4.2-enabled',
-                       'GAUSS_SCRDIR=/tmp',
+                       'mkdir /local/$USER',
+                       'GAUSS_SCRDIR=/local/$USER ##no dejar espacio despues del = porque sino escribe los temporales en el /home',
                        'export g09root GAUSS_SCRDIR',
                        '. $g09root/g09/bsd/g09.profile']
     
@@ -66,7 +67,8 @@ def write_sh(filename, nproc, time, jobname, g09in_file):
                   'echo " "',
                   'echo "Running:"',
                   'echo " " \n',
-                  f'g09 {g09in_file}']
+                  f'g09 {g09in_file}',
+                  'rm -rf /local/$USER/Gau-*']
     
     cleanup_chunk = ['# -------- SECTION final cleanup and timing statistics ------------------------ \n',
                      '''echo "END_TIME (success)   = `date +'%y-%m-%d %H:%M:%S %s'`"''',
@@ -109,7 +111,8 @@ def write_nsh(filename, nproc, time, jobname, g09in_files):
 
     gaussroot_chunk = ['# ------- Defining root directory for gaussian \n',
                        'g09root=/share/apps/Gaussian09/EM64T.SSE4.2-enabled',
-                       'GAUSS_SCRDIR=/tmp',
+                       'mkdir /local/$USER',
+                       'GAUSS_SCRDIR=/local/$USER ##no dejar espacio despues del = porque sino escribe los temporales en el /home',
                        'export g09root GAUSS_SCRDIR',
                        '. $g09root/g09/bsd/g09.profile']
     
@@ -128,7 +131,8 @@ def write_nsh(filename, nproc, time, jobname, g09in_files):
                   'echo " "',
                   'echo "Running:"',
                   'echo " " \n',
-                  g09_chunk]
+                  g09_chunk,
+                  'rm -rf /local/$USER/Gau-*']
     
     cleanup_chunk = ['# -------- SECTION final cleanup and timing statistics ------------------------ \n',
                      '''echo "END_TIME (success)   = `date +'%y-%m-%d %H:%M:%S %s'`"''',
