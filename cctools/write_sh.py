@@ -67,8 +67,7 @@ def write_sh(filename, nproc, time, jobname, g09in_file):
                   'echo " "',
                   'echo "Running:"',
                   'echo " " \n',
-                  f'g09 {g09in_file}',
-                  'rm -rf /local/$USER/Gau-*']
+                  f'g09 {g09in_file}']
     
     cleanup_chunk = ['# -------- SECTION final cleanup and timing statistics ------------------------ \n',
                      '''echo "END_TIME (success)   = `date +'%y-%m-%d %H:%M:%S %s'`"''',
@@ -131,8 +130,7 @@ def write_nsh(filename, nproc, time, jobname, g09in_files):
                   'echo " "',
                   'echo "Running:"',
                   'echo " " \n',
-                  g09_chunk,
-                  'rm -rf /local/$USER/Gau-*']
+                  g09_chunk]
     
     cleanup_chunk = ['# -------- SECTION final cleanup and timing statistics ------------------------ \n',
                      '''echo "END_TIME (success)   = `date +'%y-%m-%d %H:%M:%S %s'`"''',
