@@ -15,6 +15,17 @@ import g09opt, g09freq
 # from molecule import Molecule
 from write_g09in import g09_job
 
+
+#%% generator: reverse enumeration
+
+def reverse_enum(data: list):
+    """Generator to iterate and enumerate over a list backwards.
+    Source: https://stackoverflow.com/questions/67957942/how-to-enumerate-over-a-list-in-python-backwards-with-indexfrom-the-end-to-the"""
+    for i in range(len(data)-1, -1, -1):
+        yield (i, data[i])
+    
+
+
 #%% open file and check normal term
 
 # Function to read
@@ -244,6 +255,7 @@ def out_proc(g09out_name, pathin, steps, get_sp = False):
 
     return results
 
+
 #%% main function
 
 def main(path, g09_files = None, steps = False, extension = '.log', get_sp = False):
@@ -258,12 +270,16 @@ def main(path, g09_files = None, steps = False, extension = '.log', get_sp = Fal
     if len(g09_files) == 0:
         raise ValueError(f'No files of extension {extension} found.')
     
-    for i, file in enumerate(g09_files):
+    for i, file in reverse_enum(g09_files):
         if not check_term(file, path):
             error_term(file, path)
             error_file = g09_files.pop(i)
             print(f'{error_file} did not end in normal termination.')
-            
+    
+    if len(g09_files) == 0:
+        print(f'No jobs ended in Normal termination.')
+        return
+        
     jobs = get_jobs(os.path.join(path, g09_files[0]))[0]
 
     if 'freq' in jobs:
