@@ -127,6 +127,31 @@ def get_raw_coords(opt_step):
     
     return raw_coords
 
+
+def get_raw_coords_nosymm(sp_out):
+    """Get coordinates for the geometry for an SP or an opt step chunk 
+    with nosymm keyword.
+    In: opt step chunk.
+    Out: list of raw coordinates in g09 format."""
+
+    raw_coords = []
+    
+    for i, line in enumerate(sp_out):
+        if 'Input orientation' in line:
+            j = i+5
+            coord = True
+            while coord:
+                line = sp_out[j]
+                if '---' in line:
+                    coord = False
+                else:
+                    raw_coords.append(line.strip('\n'))
+                    j += 1
+                    
+            break
+    
+    return raw_coords
+
 def raw_to_coord(raw_coords):
     """Convert raw g09 coordinate list into
     XYZ: dictionary with atom number as key 
@@ -160,18 +185,44 @@ def get_molecule(opt_step):
     
     return molecule
                 
+def get_mol_nosymm(sp_out):
+    """Get coordinates and atom types from an sp_out with nosymm and build a Molecule
+    object."""
+    
+    raw = get_raw_coords_nosymm(sp_out)
+    coords, types = raw_to_coord(raw)
+    
+    molecule = Molecule(coords, types)
+    
+    return molecule
             
-        
+def symm_off(opt_steps):
+    """In: list of opt_steps.
+    Returns TRUE if symmetry is turned OFF, FALSE if not."""
+    
+    symm_off = False
+    
+    for line in opt_steps[0]:
+        if 'Symmetry turned off' in line:
+            symm_off = True
+            break
+    return symm_off
 
 def get_finalMolecule(opt_steps):
     """In: list of opt_steps.
     Return Molecule object for final (optimized) geometry."""
     
-    final_mol = get_molecule(opt_steps[-2])
+    if symm_off(opt_steps):
+        final_mol = get_mol_nosymm(opt_steps[-2])
+    else:
+        final_mol = get_molecule(opt_steps[-2])
     
     return final_mol
 
 #%% get additional info
+
+
+    
 
 def get_specs(opt_steps):
     """In: list of opt_steps.
