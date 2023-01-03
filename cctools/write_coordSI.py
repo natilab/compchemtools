@@ -17,7 +17,7 @@ import os
 
 from proc_g09out import get_jobs, parse_file, check_term, error_term
 from g09freq import get_freq, get_Nneg
-from g09opt import get_SCF, get_molecule, split_opt, check_opt
+from g09opt import get_SCF, get_molecule, split_opt, check_opt, get_mol_nosymm
 
 #%% get functions from freq
 
@@ -83,14 +83,18 @@ def get_out_opt(parsed_opt_out):
     
     return energy, molecule
 
-def get_out_sp(parsed_sp_out):
+def get_out_sp(parsed_sp_out, route):
     """Get information from parsed single point output to write SI.
     In: parsed opt output.
     Out: Energy, 
     molecule (coordinates in a molecule class object)."""
 
-    energy = get_SCF(parsed_sp_out) 
-    molecule = get_molecule(parsed_sp_out) 
+    energy = get_SCF(parsed_sp_out)
+    
+    if "nosymm" in route.lower():
+        molecule = get_mol_nosymm(parsed_sp_out)
+    else:
+        molecule = get_molecule(parsed_sp_out) 
     
     return energy, molecule
 
@@ -131,10 +135,10 @@ def opt_to_list(parsed_opt_job):
     
     return list_scf_out(energy, molecule)
 
-def sp_to_list(parsed_sp_job):
+def sp_to_list(parsed_sp_job, route):
     """Get output string list for writing SI from parsed SP job."""
     
-    energy, molecule = get_out_sp(parsed_sp_job)
+    energy, molecule = get_out_sp(parsed_sp_job, route)
     
     return list_scf_out(energy, molecule)
 
@@ -161,7 +165,7 @@ def g09out_to_txt_list(pathin, g09out_name):
     
     else:
         # single point
-        output_list = sp_to_list(parsed_out)
+        output_list = sp_to_list(parsed_out, route)
     
     return output_list
 
@@ -182,7 +186,10 @@ def g09out_to_xyz(pathin, g09out_name):
             molecule = get_molecule_opt(parsed_out)
     else:
         # freq or sp job
-        molecule = get_molecule(parsed_out)
+        if 'nosymm' in route.lower():
+            molecule = get_mol_nosymm(parsed_out)
+        else:
+           molecule = get_molecule(parsed_out)
     
     xyz_out = [f'{molecule.natoms}', f'{g09out_name}'] + molecule.strXYZ()
     
